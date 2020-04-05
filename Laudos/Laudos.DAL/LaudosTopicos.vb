@@ -1,0 +1,44 @@
+﻿Public Class LaudosTopicos
+    Public Shared Function ListarPorLaudo(idLaudo As Integer) As DataTable
+        Return conn.Selecionar($"Select * From vwLaudosTopicos as l Where (l.idLaudo = {idLaudo} Or l.idLaudo Is null) and idPai = 0")
+    End Function
+
+    Public Shared Function Carregar(idLaudo As Integer, idTopico As Integer) As DataTable
+        Return conn.Selecionar($"Select * From vwLaudosTopicos as l Where (l.idLaudo = {idLaudo} or  l.idLaudo  is null)  and l.idTopico  = {idTopico}")
+    End Function
+
+    Public Shared Function ListarFilhos(idPai As Integer) As DataTable
+        Return conn.Selecionar($"select * from topicos where idPai = {idPai}") ' where idcliente = {idLaudo}")
+    End Function
+
+    Public Shared Function ListarFilhosPorLaudo(idPai As Integer) As DataTable
+        Return conn.Selecionar($"Select * From vwLaudosTopicos as l Where (l.idLaudo = 1 Or l.idLaudo Is null) and idPai = {idPai}")
+    End Function
+
+    Public Shared Function InserirLaudoTopico(idLaudo As Integer, idTopico As Integer, idUsuario As Integer, bloqueado As Integer, conteudo() As Byte) As Boolean
+
+        Dim Sql = "INSERT INTO laudosTopicos (idlaudo, idTopico, idUsuarioBloqueio, conteudo, idUsuarioUltAlteracao) values (@idLaudo ,@idTopico, @idUsuarioBloqueio, @conteudo, @idUsuarioUltAlteracao)"
+
+        Dim cmd As New MySql.Data.MySqlClient.MySqlCommand
+        cmd.Parameters.AddWithValue("@idLaudo", idLaudo)
+        cmd.Parameters.AddWithValue("@idTopico", idTopico)
+        cmd.Parameters.AddWithValue("@idUsuarioBloqueio", idUsuario)
+        cmd.Parameters.AddWithValue("@conteudo", conteudo)
+        cmd.Parameters.AddWithValue("@idUsuarioUltAlteracao", idUsuario)
+
+        Return conn.ExecutarCommand(cmd)
+
+    End Function
+
+
+    Public Shared Function ExcluirLaudoTopico(idLaudo As Integer, idTopico As Integer) As Boolean
+        Dim Sql = $"DELETE FROM laudosTopicos WHERE  idlaudo = {idLaudo} AND dTopico = {idTopico}"
+        Return conn.Executar(Sql)
+    End Function
+
+
+
+    Public Shared Function ExisteLaudoTopico(idLaudo As Integer, idTopico As Integer) As Integer
+        Return conn.SelecionarNumero($"SELECT count(*) FROM laudosTopicos WHERE idLaudo= {idLaudo} and idTopico = {idTopico} ")
+    End Function
+End Class
